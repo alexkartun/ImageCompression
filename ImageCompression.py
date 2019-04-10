@@ -70,28 +70,31 @@ class KMeans:
         return centroids
 
     @staticmethod
-    def print_centroids(iteration, centroids):
-        new_centroids = np.floor(centroids * 100) / 100
-        centroids_repr = ', '.join(str(c) for c in new_centroids.tolist())
+    def print_centroids(iteration, cent):
+        if len(cent.shape) == 1:
+            centroids_repr = ' '.join(str(np.floor(100 * cent) / 100).split()).replace('[ ', '[').\
+                replace('\n', ' ').replace(' ]', ']').replace(' ', ', ')
+        else:
+            centroids_repr = ' '.join(str(np.floor(100 * cent) / 100).split()).replace('[ ', '[').\
+                replace('\n', ' ').replace(' ]', ']').replace(' ', ', ')[1:-1]
         print('iter {}: {}'.format(iteration, centroids_repr))
 
     def fit(self):
         iter2sse = defaultdict(float)
         centroids = self.init_centroids()
-        self.print_centroids(0, centroids)
-        for i in range(0, self.max_iter):
+        for i in range(self.max_iter + 1):
+            self.print_centroids(i, centroids)
             distances = self.calculate_distances(centroids)
             clusters = self.get_closest_clusters(distances)
+            iter2sse[i] = self.calculate_loss(clusters, centroids)
             centroids = self.update_centroids(clusters)
-            self.print_centroids(i + 1, centroids)
-            iter2sse[i] = self.calculate_sse(clusters, centroids)
         return centroids, iter2sse
 
-    def calculate_sse(self, clusters, centroids):
+    def calculate_loss(self, clusters, centroids):
         distance = np.zeros(self.data.shape[0])
         for i in range(self.k):
             distance[clusters == i] = norm(self.data[clusters == i] - centroids[i], axis=1)
-        return float(np.sum(np.square(distance)))
+        return float(np.sum(distance) / self.data.shape[0])
 
     def predict(self, centroids):
         distance = self.calculate_distances(centroids)
@@ -119,7 +122,8 @@ def postprocess_data(path, compressed_data, data_size):
 
 def plot_sse(path, iter2sse):
     x, y = zip(*sorted(iter2sse.items()))
-    plt.plot(x, y)
+    plt.plot(x, y, color='green', marker='o', linestyle='dashed')
+    plt.xticks(x)
     plt.ylabel('average loss')
     plt.xlabel('iteration')
     plt.savefig(path)
