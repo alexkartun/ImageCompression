@@ -25,7 +25,7 @@ class KMeans:
     def init_centroids(self):
         """
         get initial centroids according to k value
-        :return: initial ndarray of centroids
+        :return: initial array of centroids
         """
         if self.k == 2:
             return np.asarray([[0., 0., 0.],
