@@ -188,7 +188,7 @@ def postprocess_data(path, compressed_data, data_size):
     compressed_img.save(path)
 
 
-def plot_sse(path, iter2sse):
+def plot_mse(path, iter2sse):
     """
     saving the loss values per iteration to the plot
     :param path: path of the plot to be saved
