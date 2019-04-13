@@ -215,7 +215,7 @@ def main():
         km = KMeans(data, k)
         centroids, iter2sse = km.fit()  # training
         clusters = km.predict(centroids)  # testing
-        plot_sse('{}_sse.jpeg'.format(k), iter2sse)
+        plot_mse('{}_sse.jpeg'.format(k), iter2sse)
         compressed_data = km.compress(clusters, centroids)
         postprocess_data('{}_dog.jpeg'.format(k), compressed_data, data_size)
 
